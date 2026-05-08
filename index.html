@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>일본 북규슈 가족여행</title>
+  <title>후쿠오카 & 우레시노 힐링 여행 🌸</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
@@ -12,6 +12,8 @@
   <style>
     body { -webkit-tap-highlight-color: transparent; font-family: sans-serif; background: #f3f4f6; }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
+    .day-card-header { transition: opacity 0.15s; }
+    .day-card-header:active { opacity: 0.75; }
   </style>
 </head>
 <body>
@@ -20,175 +22,331 @@
   <script type="text/babel">
     const { useState } = React;
 
-    const TimelineItem = ({ time, title, sub, icon, iconColor = 'text-gray-600', borderColor = 'border-gray-100', last = false, highlight = false }) => (
-      <div className={`flex relative z-10 ${last ? '' : 'mb-6'}`}>
-        <div className={`bg-white rounded-full p-1 border-2 ${borderColor} shadow-sm z-10 mr-4 h-8 w-8 flex items-center justify-center shrink-0`}>
-          <i className={`fa-solid ${icon} ${iconColor} text-xs`}></i>
-        </div>
-        <div className="flex-1 pt-0.5">
-          <div className="flex items-end gap-2 mb-1 flex-wrap">
-            <span className={`font-bold text-lg ${highlight ? 'text-rose-700' : 'text-gray-800'}`}>{time}</span>
-            <span className={`font-bold ${highlight ? 'text-rose-700' : 'text-gray-700'}`}>{title}</span>
-          </div>
-          <p className="text-gray-500 text-sm leading-relaxed">{sub}</p>
-        </div>
+    /* ── 이동 구간 ── */
+    const Drive = ({ dist, time }) => (
+      <div className="flex items-center gap-2 my-3 ml-10 px-3 py-2 rounded-lg border border-dashed border-gray-200 bg-gray-50 text-xs text-gray-400">
+        <i className="fa-solid fa-car-side text-gray-300 shrink-0"></i>
+        <span className="flex-1">{dist}</span>
+        <span className="text-gray-300">|</span>
+        <span className="shrink-0">{time}</span>
       </div>
     );
 
-    const InfoChip = ({ icon, text }) => (
-      <span className="flex items-center gap-1 bg-gray-50 rounded-lg px-2 py-1.5 text-xs text-gray-600">
-        <i className={`fa-solid ${icon} text-green-500`}></i>
-        {text}
-      </span>
+    /* ── 섹션 구분선 ── */
+    const SLabel = ({ label }) => (
+      <div className="flex items-center gap-2 my-4 ml-10">
+        <div className="h-px flex-1 bg-gray-100" />
+        <span className="text-xs text-gray-300 font-medium px-2">{label}</span>
+        <div className="h-px flex-1 bg-gray-100" />
+      </div>
     );
 
+    /* ── 타임라인 아이템 ── */
+    const TL = ({ time, title, sub, icon, ic='text-gray-500', bc='border-gray-100', accent=false, drive, last=false }) => (
+      <>
+        <div className={`flex relative z-10 ${last && !drive ? '' : 'mb-1'}`}>
+          <div className={`bg-white rounded-full p-1 border-2 ${bc} shadow-sm z-10 mr-4 h-8 w-8 flex items-center justify-center shrink-0`}>
+            <i className={`fa-solid ${icon} ${ic} text-xs`}></i>
+          </div>
+          <div className="flex-1 pt-0.5">
+            <div className="flex items-end gap-2 mb-0.5 flex-wrap">
+              <span className={`font-bold text-lg leading-none ${accent ? 'text-purple-700' : 'text-gray-800'}`}>{time}</span>
+              <span className={`font-bold text-sm ${accent ? 'text-purple-700' : 'text-gray-700'}`}>{title}</span>
+            </div>
+            {sub && <p className="text-gray-400 text-xs mt-0.5 leading-relaxed">{sub}</p>}
+          </div>
+        </div>
+        {drive && <Drive dist={drive.dist} time={drive.time} />}
+      </>
+    );
+
+    /* ════════════════════════════════
+       일정 데이터
+    ════════════════════════════════ */
+    const days = [
+      /* ─ 1일차 ─ */
+      {
+        id: 'd1',
+        label: '1일차',
+        date: '5.21 (목)',
+        theme: '입국 · 다케오 · 아리타',
+        /* 헤더 아이콘 구성 */
+        headerIcons: [
+          { icon: 'fa-plane', color: 'text-blue-400', bg: 'bg-blue-50' },
+          { icon: 'fa-book-open', color: 'text-amber-500', bg: 'bg-amber-50' },
+          { icon: 'fa-jar', color: 'text-teal-500', bg: 'bg-teal-50' },
+          { icon: 'fa-hot-tub-person', color: 'text-indigo-400', bg: 'bg-indigo-50' },
+        ],
+        headerGrad: 'from-violet-500 to-purple-600',
+        body: () => (<>
+          <TL time="06:30" title="인천(ICN) 출발" sub="아시아나 OZ132 · T1"
+            icon="fa-plane" ic="text-blue-500"
+            drive={{ dist: '인천 → 후쿠오카  약 1,100km', time: '1h 25m' }} />
+          <TL time="07:55" title="후쿠오카(FUK) 도착" sub="국제선 터미널 · 입국 수속"
+            icon="fa-location-dot" ic="text-red-500" />
+          <TL time="08:00" title="입국 + ORIX 렌터카 수령" sub="공항 카운터 수속 (08:00 ~ 09:00)"
+            icon="fa-car" ic="text-gray-600"
+            drive={{ dist: '후쿠오카 → 다케오  약 70km', time: '약 1시간 20분' }} />
+
+          <SLabel label="다케오 관광" />
+          <TL time="10:20" title="다케오 시립 도서관 & 스타벅스" sub="츠타야 운영 감성 도서관 · 커피 ☕  (10:20 ~ 11:20)"
+            icon="fa-book-open" ic="text-amber-600" bc="border-amber-200" accent />
+          <TL time="11:20" title="다케오 온천 문루" sub="국가 중요문화재 포토존 📸  (11:20 ~ 11:40)"
+            icon="fa-torii-gate" ic="text-rose-500" bc="border-rose-200" accent
+            drive={{ dist: '→ 아리타 방향  약 15km', time: '약 20분' }} />
+
+          <SLabel label="점심" />
+          <TL time="12:00" title="점심 식사" sub="아리타·다케오 인근 향토 음식  (12:00 ~ 13:00)"
+            icon="fa-utensils" ic="text-orange-500"
+            drive={{ dist: '→ 아리타  약 10km', time: '약 15분' }} />
+
+          <SLabel label="아리타 도자기 마을" />
+          <TL time="13:15" title="아리타 도자기 마을" sub="일본 도자기 발상지 · 갤러리 & 쇼핑 🏺  (13:15 ~ 14:30)"
+            icon="fa-jar" ic="text-teal-600" bc="border-teal-200" accent
+            drive={{ dist: '아리타 → 우레시노  약 20km', time: '약 30분' }} />
+
+          <SLabel label="우레시노 체크인" />
+          <TL time="15:00" title="카페 / 자유 휴식" sub="우레시노 시내 카페 또는 시라스나 족욕  (15:00 ~ 16:00)"
+            icon="fa-mug-hot" ic="text-amber-500" />
+          <TL time="16:30" title="와타야 베쏘 체크인 🏯" sub="우레시노 온천 대표 고급 료칸"
+            icon="fa-bed" ic="text-indigo-500" bc="border-indigo-200" accent />
+          <TL time="17:00" title="온천 & 휴식" sub="노천탕 · 료칸 온천 자유 이용  (17:00 ~ 18:30)"
+            icon="fa-hot-tub-person" ic="text-blue-400" />
+          <TL time="18:30" title="저녁 식사" sub="료칸 가이세키 또는 인근 식당  (18:30 ~ 20:00)"
+            icon="fa-utensils" ic="text-orange-500" />
+          <TL time="20:00" title="자유 시간" sub="야간 온천 · 산책 · 취침 준비"
+            icon="fa-moon" ic="text-indigo-300" last />
+        </>)
+      },
+
+      /* ─ 2일차 ─ */
+      {
+        id: 'd2',
+        label: '2일차',
+        date: '5.22 (금)',
+        theme: '사세보 · 하우스텐보스',
+        headerIcons: [
+          { icon: 'fa-water', color: 'text-cyan-500', bg: 'bg-cyan-50' },
+          { icon: 'fa-burger', color: 'text-orange-500', bg: 'bg-orange-50' },
+          { icon: 'fa-fort-awesome', color: 'text-indigo-500', bg: 'bg-indigo-50' },
+          { icon: 'fa-star', color: 'text-yellow-400', bg: 'bg-yellow-50' },
+        ],
+        headerGrad: 'from-rose-500 to-pink-600',
+        body: () => (<>
+          <TL time="08:00" title="기상" icon="fa-sun" ic="text-orange-400" />
+          <TL time="08:30" title="아침 식사 + 온천" sub="호텔 조식 후 아침 온천  (08:30 ~ 09:30)"
+            icon="fa-hot-tub-person" ic="text-blue-400"
+            drive={{ dist: '우레시노 → 사세보  약 50km', time: '약 1시간' }} />
+
+          <SLabel label="사세보 관광" />
+          <TL time="10:30" title="구주쿠시마 전망대 or 항구 산책" sub="99개 섬 절경 🌊  (10:30 ~ 11:30)"
+            icon="fa-water" ic="text-cyan-500" bc="border-cyan-200" accent
+            drive={{ dist: '→ 약 5km', time: '약 10분' }} />
+          <TL time="11:40" title="점심 — 사세보 버거 🍔" sub="일본 3대 버거 발상지 원조 수제버거  (11:40 ~ 12:40)"
+            icon="fa-burger" ic="text-orange-500" bc="border-orange-200" accent
+            drive={{ dist: '사세보 → 하우스텐보스  약 15km', time: '약 25분' }} />
+
+          <SLabel label="하우스텐보스" />
+          <TL time="13:30" title="주차 및 입장 준비" sub="사전 구매 티켓 확인"
+            icon="fa-ticket" ic="text-purple-500" />
+          <TL time="14:00" title="낮 관광 🏰" sub="보트 · VR · 테마존 산책  (14:00 ~ 17:30)"
+            icon="fa-fort-awesome" ic="text-indigo-500" bc="border-indigo-200" accent />
+          <TL time="17:30" title="휴식 + 간식" sub="카페 · 베이커리  (17:30 ~ 18:30)"
+            icon="fa-mug-hot" ic="text-amber-500" />
+          <TL time="18:30" title="야경 · 일루미네이션 🌟" sub="하우스텐보스 최대 하이라이트  (18:30 ~ 21:00)"
+            icon="fa-star" ic="text-yellow-500" bc="border-yellow-200" accent />
+          <TL time="21:00" title="하우스텐보스 출발"
+            icon="fa-car" ic="text-gray-600"
+            drive={{ dist: '하우스텐보스 → 우레시노  약 35km', time: '약 50분' }} />
+          <TL time="22:00" title="숙소 도착 · 취침" sub="와타야 베쏘 복귀"
+            icon="fa-bed" ic="text-indigo-400" last />
+        </>)
+      },
+
+      /* ─ 3일차 ─ */
+      {
+        id: 'd3',
+        label: '3일차',
+        date: '5.23 (토)',
+        theme: '운젠 지옥 · 나가사키 야경',
+        headerIcons: [
+          { icon: 'fa-fire-flame-curved', color: 'text-orange-500', bg: 'bg-orange-50' },
+          { icon: 'fa-egg', color: 'text-amber-500', bg: 'bg-amber-50' },
+          { icon: 'fa-dove', color: 'text-sky-500', bg: 'bg-sky-50' },
+          { icon: 'fa-mountain', color: 'text-violet-500', bg: 'bg-violet-50' },
+        ],
+        headerGrad: 'from-teal-500 to-emerald-600',
+        body: () => (<>
+          <TL time="07:30" title="기상" icon="fa-sun" ic="text-orange-400" />
+          <TL time="08:00" title="아침 식사" sub="호텔 조식  (08:00 ~ 08:30)"
+            icon="fa-utensils" ic="text-orange-400"
+            drive={{ dist: '우레시노 → 운젠  약 80km', time: '약 1시간 40분' }} />
+
+          <SLabel label="운젠 관광" />
+          <TL time="10:10" title="운젠 지옥 관광 🌋" sub="유황 분화구 대지옥 · 흰 연기 절경  (10:10 ~ 11:20)"
+            icon="fa-fire-flame-curved" ic="text-orange-600" bc="border-orange-200" accent />
+          <TL time="11:20" title="지옥공방 체험" sub="온천열로 찐 계란 · 온천 두부 맛보기  (11:20 ~ 12:00)"
+            icon="fa-egg" ic="text-amber-500" bc="border-amber-200" />
+          <TL time="12:00" title="점심 식사" sub="운젠 온천 마을 내 식당  (12:00 ~ 13:00)"
+            icon="fa-utensils" ic="text-orange-500"
+            drive={{ dist: '운젠 → 나가사키  약 40km', time: '약 1시간' }} />
+
+          <SLabel label="나가사키 시내 관광" />
+          <TL time="14:00" title="나가사키 도착" icon="fa-location-dot" ic="text-red-400" />
+          <TL time="14:00" title="평화공원 or 글로버가든 (택2)" sub="🕊️ 평화공원 — 원폭기념관·평화기념상  /  🌿 글로버가든 — 항구 전망  (14:00 ~ 16:30)"
+            icon="fa-dove" ic="text-sky-500" bc="border-sky-200" accent />
+          <TL time="16:30" title="카페 휴식" sub="나가사키 시내 카페  (16:30 ~ 17:30)"
+            icon="fa-mug-hot" ic="text-amber-500"
+            drive={{ dist: '→ 이나사야마  약 10km', time: '약 30분 (산길)' }} />
+
+          <SLabel label="이나사야마 야경" />
+          <TL time="18:00" title="이나사야마 전망대 야경 🌃" sub="일본 3대 야경 · 나가사키항 파노라마  (18:00 ~ 19:00)"
+            icon="fa-mountain" ic="text-violet-600" bc="border-violet-200" accent />
+          <TL time="19:30" title="저녁 식사" sub="나가사키 짬뽕 · 카스테라 · 향토요리  (19:30 ~ 20:30)"
+            icon="fa-utensils" ic="text-orange-500"
+            drive={{ dist: '나가사키 → 우레시노  약 90km', time: '약 1시간 40분' }} />
+          <TL time="22:00" title="숙소 도착 · 취침" sub="와타야 베쏘 복귀 · 마지막 온천 강추 🛁"
+            icon="fa-bed" ic="text-indigo-400" last />
+        </>)
+      },
+
+      /* ─ 4일차 ─ */
+      {
+        id: 'd4',
+        label: '4일차',
+        date: '5.24 (일)',
+        theme: '후쿠오카 쇼핑 · 귀국',
+        headerIcons: [
+          { icon: 'fa-bag-shopping', color: 'text-pink-500', bg: 'bg-pink-50' },
+          { icon: 'fa-bowl-food', color: 'text-orange-500', bg: 'bg-orange-50' },
+          { icon: 'fa-car', color: 'text-gray-500', bg: 'bg-gray-100' },
+          { icon: 'fa-plane-departure', color: 'text-blue-500', bg: 'bg-blue-50' },
+        ],
+        headerGrad: 'from-blue-500 to-sky-500',
+        body: () => (<>
+          <TL time="08:00" title="기상" icon="fa-sun" ic="text-orange-400" />
+          <TL time="08:30" title="체크아웃 준비 + 아침" sub="와타야 베쏘 최종 체크아웃  (08:30 ~ 09:30)"
+            icon="fa-bed" ic="text-indigo-500"
+            drive={{ dist: '우레시노 → 후쿠오카  약 110km', time: '약 1시간 30분' }} />
+
+          <SLabel label="후쿠오카 쇼핑" />
+          <TL time="11:00" title="후쿠오카 도착" icon="fa-location-dot" ic="text-red-400" />
+          <TL time="11:00" title="쇼핑 🛍️ — 캐널시티 or 텐진" sub="캐널시티 하카타 / 텐진 지하상가  (11:00 ~ 13:00)"
+            icon="fa-bag-shopping" ic="text-pink-500" bc="border-pink-200" accent />
+          <TL time="13:00" title="점심 식사" sub="하카타 라멘 · 명란 요리 · 우동  (13:00 ~ 14:00)"
+            icon="fa-bowl-food" ic="text-orange-500"
+            drive={{ dist: '→ 후쿠오카공항  약 5km', time: '약 15분' }} />
+
+          <SLabel label="귀국" />
+          <TL time="13:30" title="후쿠오카공항 도착 · 렌터카 반납" sub="ORIX 렌터카 공항점 반납"
+            icon="fa-car" ic="text-gray-600" />
+          <TL time="14:00" title="탑승 수속 · 출국 심사" sub="출국장 이동 · 면세점 쇼핑"
+            icon="fa-passport" ic="text-green-600" />
+          <TL time="16:25" title="후쿠오카(FUK) 출발 ✈️" sub="아시아나 OZ133 · 국제선 T"
+            icon="fa-plane-departure" ic="text-blue-500" bc="border-blue-200" accent />
+          <TL time="17:50" title="인천(ICN) 도착" sub="또 다른 그날을 기약하며 ☺"
+            icon="fa-location-dot" ic="text-red-400" last />
+        </>)
+      }
+    ];
+
+    /* ════════════════════════════════
+       메인 앱
+    ════════════════════════════════ */
     function App() {
-      const [activeTab, setActiveTab] = useState('schedule');
-      const [expandedDays, setExpandedDays] = useState({ day1: true, day2: true, day3: false, day4: false });
+      const [tab, setTab] = useState('schedule');
+      const [open, setOpen] = useState({ d1:true, d2:false, d3:false, d4:false });
+      const toggle = id => setOpen(p => ({ ...p, [id]: !p[id] }));
 
-      const toggleDay = (d) => setExpandedDays(p => ({ ...p, [d]: !p[d] }));
-
-      const days = [
-        {
-          id: 'day1',
-          label: '1일차',
-          date: '5.21 (수)',
-          theme: '우레시노 이동 · 감성 산책 · 온천',
-          items: [
-            { time: '06:30', title: '인천(ICN) 출발', sub: '아시아나 OZ132', icon: 'fa-plane', iconColor: 'text-blue-500' },
-            { time: '07:55', title: '후쿠오카(FUK) 도착', sub: '입국 수속 및 수하물 찾기 | 국제선 터미널', icon: 'fa-location-dot', iconColor: 'text-red-500' },
-            { time: '08:40', title: 'ORIX 렌터카 인수', sub: '예약번호 W7866709 | 국제선 카운터 접수 후 이동', icon: 'fa-car', iconColor: 'text-gray-700' },
-            { time: '10:20', title: '우레시노 이동', sub: '차량 이동 약 1시간 20분 | 중간 휴게소 필요 시 간단 정차', icon: 'fa-road', iconColor: 'text-slate-600' },
-            { time: '11:40', title: '우레시노 점심', sub: '온천두부 정식 또는 소바 · 일본 첫 식사는 가볍고 만족도 높게', icon: 'fa-utensils', iconColor: 'text-orange-500', borderColor: 'border-orange-200' },
-            { time: '13:00', title: '우레시노 온천거리 산책', sub: '온천마을 골목 · 차 디저트 · 족욕 체험(선택) | 짧고 감성 있게', icon: 'fa-camera-retro', iconColor: 'text-purple-600', borderColor: 'border-purple-200', highlight: true },
-            { time: '15:00', title: '와타야 베쏘 체크인', sub: '호텔 예약번호 1717639323 | 객실 정리 후 휴식', icon: 'fa-bed', iconColor: 'text-indigo-500' },
-            { time: '16:30', title: '호텔 온천 & 자유시간', sub: '노천탕 또는 대욕장 이용 | 가족별 휴식 시간', icon: 'fa-hot-tub-person', iconColor: 'text-sky-500' },
-            { time: '18:30', title: '우레시노 저녁', sub: '호텔식 또는 인근 로컬 식당 | 첫날은 무리하지 않고 여유 있게', icon: 'fa-bowl-food', iconColor: 'text-amber-500' },
-          ]
-        },
-        {
-          id: 'day2',
-          label: '2일차',
-          date: '5.22 (목)',
-          theme: '하우스텐보스 올인 데이',
-          items: [
-            { time: '08:00', title: '기상 · 조식', sub: '호텔 조식 후 여유 있게 출발 준비', icon: 'fa-sun', iconColor: 'text-orange-400' },
-            { time: '09:00', title: '하우스텐보스 이동', sub: '우레시노 출발 | 차량 약 1시간', icon: 'fa-car', iconColor: 'text-gray-700' },
-            { time: '10:10', title: '하우스텐보스 입장', sub: '유럽풍 거리 산책 · 풍차존 · 포토스팟 먼저 즐기기', icon: 'fa-fort-awesome', iconColor: 'text-indigo-600', borderColor: 'border-indigo-200', highlight: true },
-            { time: '12:30', title: '테마파크 점심', sub: '파스타 · 피자 · 카페 중 선택 | 무리 없이 내부에서 해결', icon: 'fa-utensils', iconColor: 'text-orange-500' },
-            { time: '14:00', title: '오후 체험존', sub: '운하 보트 · 실내 체험 · 전망 포인트 · 기념품샵', icon: 'fa-ticket', iconColor: 'text-emerald-600' },
-            { time: '17:30', title: '일루미네이션 골든타임', sub: '야경 메인존 · 조명 거리 · 가족 사진 촬영 추천', icon: 'fa-star', iconColor: 'text-yellow-500', borderColor: 'border-yellow-200', highlight: true },
-            { time: '19:00', title: '하우스텐보스 저녁', sub: '파크 내 레스토랑 또는 간단 먹거리', icon: 'fa-champagne-glasses', iconColor: 'text-rose-500' },
-            { time: '20:30', title: '우레시노 복귀', sub: '차량 이동 후 호텔 휴식', icon: 'fa-car-side', iconColor: 'text-gray-700' },
-          ]
-        },
-        {
-          id: 'day3',
-          label: '3일차',
-          date: '5.23 (금)',
-          theme: '나가사키 뷰 · 먹거리 · 야경',
-          items: [
-            { time: '08:00', title: '기상 · 조식', sub: '체크아웃 아님 | 짐은 가볍게 두고 출발', icon: 'fa-mug-hot', iconColor: 'text-orange-400' },
-            { time: '08:40', title: '나가사키 이동', sub: '우레시노 출발 | 약 1시간 20분', icon: 'fa-car', iconColor: 'text-gray-700' },
-            { time: '10:10', title: '글로버가든', sub: '항구 전망 · 언덕 풍경 · 사진 스팟 중심 관광', icon: 'fa-tree-city', iconColor: 'text-green-600', borderColor: 'border-green-200', highlight: true },
-            { time: '12:00', title: '나가사키 짬뽕 점심', sub: '시카이로 계열 또는 현지 인기점 추천 | 대표 메뉴 중심', icon: 'fa-bowl-food', iconColor: 'text-orange-500' },
-            { time: '13:30', title: '신치 차이나타운 산책', sub: '간식 · 디저트 · 기념품 구경 | 오래 머물기보다 가볍게', icon: 'fa-store', iconColor: 'text-red-500' },
-            { time: '15:00', title: '카페 또는 휴식', sub: '이동 사이 템포 조절 | 가족 컨디션 따라 유동 운영', icon: 'fa-mug-saucer', iconColor: 'text-brown-500' },
-            { time: '17:30', title: '이나사야마 전망대', sub: '나가사키 야경 핵심 | 해 질 무렵 도착 추천', icon: 'fa-mountain-city', iconColor: 'text-violet-600', borderColor: 'border-violet-200', highlight: true },
-            { time: '19:00', title: '나가사키 저녁 또는 복귀 후 식사', sub: '컨디션에 따라 현지 식사 후 이동 또는 우레시노 복귀', icon: 'fa-utensils', iconColor: 'text-orange-500' },
-            { time: '21:00', title: '호텔 복귀', sub: '마지막 밤 휴식', icon: 'fa-moon', iconColor: 'text-slate-500' },
-          ]
-        },
-        {
-          id: 'day4',
-          label: '4일차',
-          date: '5.24 (토)',
-          theme: '후쿠오카 가볍게 · 쇼핑 · 귀국',
-          items: [
-            { time: '08:00', title: '기상 · 체크아웃 준비', sub: '짐 정리 후 여유 있게 출발', icon: 'fa-suitcase-rolling', iconColor: 'text-indigo-500' },
-            { time: '08:50', title: '호텔 체크아웃', sub: '와타야 베쏘 출발', icon: 'fa-circle-check', iconColor: 'text-green-500' },
-            { time: '10:20', title: '후쿠오카 시내 도착', sub: '캐널시티 또는 하카타역 권역 추천', icon: 'fa-city', iconColor: 'text-sky-600' },
-            { time: '10:30', title: '쇼핑 · 자유시간', sub: '캐널시티 · 기념품 · 드럭스토어 쇼핑 | 귀국 전 정리', icon: 'fa-bag-shopping', iconColor: 'text-pink-500', borderColor: 'border-pink-200', highlight: true },
-            { time: '12:00', title: '후쿠오카 점심', sub: '라멘 · 돈카츠 · 덮밥 등 가족 취향에 맞춰 선택', icon: 'fa-utensils', iconColor: 'text-orange-500' },
-            { time: '13:40', title: '공항 방향 이동', sub: '렌터카 반납 고려해 여유 있게 출발', icon: 'fa-car', iconColor: 'text-gray-700' },
-            { time: '14:30', title: 'ORIX 렌터카 반납', sub: '예약번호 W7866709 | 후쿠오카 국제선 이용', icon: 'fa-warehouse', iconColor: 'text-gray-700' },
-            { time: '16:25', title: '후쿠오카(FUK) 출발', sub: '아시아나 OZ133', icon: 'fa-plane-departure', iconColor: 'text-blue-500' },
-            { time: '18:05', title: '인천(ICN) 도착', sub: '3박 4일 가족여행 마무리', icon: 'fa-location-dot', iconColor: 'text-red-500' },
-          ]
-        }
-      ];
+      const GRAD = 'linear-gradient(135deg,#7c3aed 0%,#be185d 100%)';
 
       return (
         <div className="bg-gray-100 min-h-screen">
-          <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-20 shadow-2xl border-x border-gray-200 relative">
+          <div className="max-w-md mx-auto bg-gray-50 min-h-screen pb-24 shadow-2xl border-x border-gray-200">
 
-            <div className="text-white p-6 rounded-b-3xl shadow-md" style={{background: 'linear-gradient(135deg, #7c3aed 0%, #be185d 100%)'}}>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-2xl">✈️</span>
-                <h1 className="text-xl font-bold tracking-tight">일본 북규슈 가족여행</h1>
+            {/* ── 헤더 ── */}
+            <div className="text-white p-6 rounded-b-3xl shadow-lg"
+              style={{ background:'linear-gradient(135deg,#7c3aed 0%,#be185d 55%,#f59e0b 100%)' }}>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-4xl">🌸</span>
+                <div>
+                  <h1 className="text-xl font-bold tracking-tight">후쿠오카 & 우레시노</h1>
+                  <p className="text-purple-100 text-sm">힐링 & 관광 여행</p>
+                </div>
               </div>
-              <p className="flex items-center text-purple-100 text-sm mb-1.5">
-                <i className="fa-regular fa-calendar mr-2 w-4"></i> 언제 : 2026.05.21 - 05.24 (3박 4일)
-              </p>
-              <p className="flex items-center text-purple-100 text-sm mb-1.5">
-                <i className="fa-solid fa-location-dot mr-2 w-4"></i> 어디로 : 후쿠오카, 우레시노, 하우스텐보스, 나가사키
-              </p>
-              <p className="flex items-center text-purple-100 text-sm">
-                <i className="fa-solid fa-heart mr-2 w-4"></i> 누구 : 아빠, 엄마, 정민이, 사춘기 준영이
-              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {[
+                  ['fa-regular fa-calendar','2026.05.21 (목) – 05.24 (일)'],
+                  ['fa-solid fa-moon','3박 4일'],
+                  ['fa-solid fa-bed','와타야 베쏘 3박'],
+                  ['fa-solid fa-route','후쿠오카 · 사세보 · 운젠 · 나가사키'],
+                ].map(([ic,txt]) => (
+                  <div key={txt} className="bg-white/15 rounded-xl px-3 py-2 flex items-center gap-2">
+                    <i className={`${ic} text-yellow-200 shrink-0`}></i>
+                    <span className="text-white leading-tight">{txt}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
+            {/* ── 탭 ── */}
             <div className="flex px-4 mt-5 gap-2">
-              <button onClick={() => setActiveTab('schedule')}
-                className={`flex-1 py-3 font-bold rounded-xl transition text-sm ${activeTab === 'schedule' ? 'text-white shadow-lg' : 'bg-white text-gray-500 shadow'}`}
-                style={activeTab === 'schedule' ? {background: 'linear-gradient(135deg, #7c3aed, #be185d)'} : {}}>
-                상세 일정표
-              </button>
-              <button onClick={() => setActiveTab('info')}
-                className={`flex-1 py-3 font-bold rounded-xl transition text-sm ${activeTab === 'info' ? 'text-white shadow-lg' : 'bg-white text-gray-500 shadow'}`}
-                style={activeTab === 'info' ? {background: 'linear-gradient(135deg, #7c3aed, #be185d)'} : {}}>
-                예약 정보
-              </button>
+              {[['schedule','📅 상세 일정표'],['info','🗂 예약 정보']].map(([t,lbl]) => (
+                <button key={t} onClick={() => setTab(t)}
+                  className={`flex-1 py-3 font-bold rounded-xl transition text-sm shadow ${tab!==t ? 'bg-white text-gray-500' : ''}`}
+                  style={tab===t ? { background:GRAD, color:'#fff' } : {}}>
+                  {lbl}
+                </button>
+              ))}
             </div>
 
             <div className="p-4 mt-2">
-              {activeTab === 'schedule' && (
-                <div className="space-y-4">
-                  <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <i className="fa-solid fa-route text-purple-600"></i>
-                      <h2 className="font-bold text-gray-800">여행 운영 포인트</h2>
-                    </div>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      일상에서 벗어나 가족 간 관계 회복과 정서적 충전을 위한 여행 컨셉임. 단순 관광이 아닌 바쁜 일상 속 대화의 부족을 극복하고 함께 보내는 시간을 확보함으로써 같이 경험하고 기억과 추억을 만드는 여행임.
-                      첫날은 가볍게, 둘째 날과 셋째 날은 핵심 관광지에 집중하고자 한다.
-                      "따뜻하고 여유로운, 가족간 거리가 가까워지는 여행"
-                    </p>
-                  </div>
 
-                  {days.map((day) => (
-                    <div key={day.id} className={`bg-white rounded-2xl shadow-sm overflow-hidden border ${day.id === 'day2' ? 'border-indigo-200 ring-2 ring-indigo-50' : day.id === 'day3' ? 'border-rose-200 ring-2 ring-rose-50' : 'border-gray-100'}`}>
-                      <div
-                        className="p-4 flex justify-between items-center cursor-pointer transition active:opacity-80"
-                        style={{background: 'linear-gradient(to right, #faf5ff, #fff1f2)'}}
-                        onClick={() => toggleDay(day.id)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-white px-3 py-1 rounded-full text-xs font-bold" style={{background: 'linear-gradient(135deg, #7c3aed, #be185d)'}}>{day.label}</span>
-                          <span className="font-bold text-gray-800">{day.date}</span>
+              {/* ══ 일정 탭 ══ */}
+              {tab === 'schedule' && (
+                <div className="space-y-4">
+                  {days.map(d => (
+                    <div key={d.id}
+                      className="bg-white rounded-2xl shadow-sm overflow-hidden"
+                      style={{ border:'1.5px solid #e5e7eb' }}>
+
+                      {/* ── 일정 카드 헤더 (아이콘 방식) ── */}
+                      <div className="day-card-header cursor-pointer"
+                        onClick={() => toggle(d.id)}>
+                        {/* 그라데이션 배너 */}
+                        <div className={`bg-gradient-to-r ${d.headerGrad} px-4 pt-4 pb-3`}>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="bg-white/25 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+                                  {d.label}
+                                </span>
+                                <span className="text-white font-bold text-base">{d.date}</span>
+                              </div>
+                              <p className="text-white/80 text-xs">{d.theme}</p>
+                            </div>
+                            <i className={`fa-solid fa-chevron-down text-white/70 text-sm transition-transform duration-300 ${open[d.id] ? 'rotate-180' : ''}`}></i>
+                          </div>
                         </div>
-                        <div className="flex items-center text-purple-700 font-medium text-xs text-right max-w-[150px]">
-                          <span>{day.theme}</span>
-                          <i className={`fa-solid fa-chevron-right ml-2 transition-transform duration-300 ${expandedDays[day.id] ? 'rotate-90' : ''}`}></i>
+
+                        {/* 아이콘 행 */}
+                        <div className="flex border-t border-gray-100">
+                          {d.headerIcons.map((hi, i) => (
+                            <div key={i}
+                              className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 ${i < d.headerIcons.length-1 ? 'border-r border-gray-100' : ''}`}>
+                              <div className={`w-9 h-9 rounded-full ${hi.bg} flex items-center justify-center`}>
+                                <i className={`fa-solid ${hi.icon} ${hi.color} text-base`}></i>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
-                      {expandedDays[day.id] && (
-                        <div className="p-4 relative">
-                          <div className="absolute left-7 top-6 bottom-6 w-0.5 bg-gray-100"></div>
-                          {day.items.map((item, i) => (
-                            <TimelineItem key={i} {...item} last={i === day.items.length - 1} />
-                          ))}
+                      {/* ── 타임라인 ── */}
+                      {open[d.id] && (
+                        <div className="p-4 relative border-t border-gray-100">
+                          <div className="absolute left-7 top-4 bottom-4 w-0.5 bg-gray-100"></div>
+                          {d.body()}
                         </div>
                       )}
                     </div>
@@ -196,132 +354,192 @@
                 </div>
               )}
 
-              {activeTab === 'info' && (
+              {/* ══ 예약 정보 탭 ══ */}
+              {tab === 'info' && (
                 <div className="space-y-4 pb-10">
+
+                  {/* 항공권 */}
                   <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center gap-2 mb-4 border-b pb-3">
                       <i className="fa-solid fa-plane text-blue-500 text-lg"></i>
                       <h2 className="text-lg font-bold text-gray-800">항공권 정보</h2>
                     </div>
-                    <div className="text-xs text-gray-400 mb-3 bg-gray-50 rounded px-3 py-2">
-                      <i className="fa-solid fa-plane-departure mr-1"></i> 아시아나 왕복 예약 완료
+                    <div className="bg-gray-50 border rounded-xl px-4 py-3 mb-4 flex items-center justify-between">
+                      <span className="text-gray-500 text-sm">예약번호</span>
+                      <span className="font-mono font-bold text-gray-900 text-xl tracking-widest">FQRIFP</span>
                     </div>
-                    <div className="space-y-3 text-sm">
-                      <div className="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                        <span className="font-bold text-blue-800 block mb-2">출발 (5.21 수) | 아시아나 OZ132</span>
-                        <div className="flex items-center justify-between text-blue-900">
-                          <div className="text-center">
-                            <div className="font-bold text-lg">06:30</div>
-                            <div className="text-xs text-blue-600">인천(ICN)</div>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <i className="fa-solid fa-plane text-blue-300 text-xs mb-1"></i>
-                            <div className="text-xs text-blue-400">1h 25m</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="font-bold text-lg">07:55</div>
-                            <div className="text-xs text-blue-600">후쿠오카(FUK)</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-rose-50 p-3 rounded-xl border border-rose-100">
-                        <span className="font-bold text-rose-800 block mb-2">귀국 (5.24 토) | 아시아나 OZ133</span>
-                        <div className="flex items-center justify-between text-rose-900">
-                          <div className="text-center">
-                            <div className="font-bold text-lg">16:25</div>
-                            <div className="text-xs text-rose-600">후쿠오카(FUK)</div>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <i className="fa-solid fa-plane text-rose-300 text-xs mb-1"></i>
-                            <div className="text-xs text-rose-400">1h 40m</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="font-bold text-lg">18:05</div>
-                            <div className="text-xs text-rose-600">인천(ICN)</div>
+                    <div className="space-y-3">
+                      {[
+                        { bg:'blue',  emoji:'🛫', label:'출발 (5.21 목) · 아시아나 OZ132', dep:'06:30', arr:'07:55', from:'인천(ICN) T1',  to:'후쿠오카(FUK)', dur:'1h 25m' },
+                        { bg:'rose',  emoji:'🛬', label:'귀국 (5.24 일) · 아시아나 OZ133', dep:'16:25', arr:'17:50', from:'후쿠오카(FUK)', to:'인천(ICN) T2',  dur:'1h 25m' },
+                      ].map(f => (
+                        <div key={f.bg} className={`p-4 rounded-xl`}
+                          style={{ background: f.bg==='blue' ? '#eff6ff' : '#fff1f2',
+                                   border: `1px solid ${f.bg==='blue' ? '#bfdbfe' : '#fecdd3'}` }}>
+                          <div className={`font-bold text-sm mb-3 ${f.bg==='blue' ? 'text-blue-700' : 'text-rose-700'}`}>{f.emoji} {f.label}</div>
+                          <div className="flex items-center justify-between">
+                            <div className="text-center">
+                              <div className={`font-bold text-2xl ${f.bg==='blue' ? 'text-blue-900' : 'text-rose-900'}`}>{f.dep}</div>
+                              <div className={`text-xs mt-0.5 ${f.bg==='blue' ? 'text-blue-500' : 'text-rose-500'}`}>{f.from}</div>
+                            </div>
+                            <div className="flex flex-col items-center flex-1 px-2">
+                              <div className="flex items-center w-full">
+                                <div className={`h-px flex-1 ${f.bg==='blue' ? 'bg-blue-200' : 'bg-rose-200'}`}></div>
+                                <i className={`fa-solid fa-plane ${f.bg==='blue' ? 'text-blue-400' : 'text-rose-400'} mx-2 text-xs`}></i>
+                                <div className={`h-px flex-1 ${f.bg==='blue' ? 'bg-blue-200' : 'bg-rose-200'}`}></div>
+                              </div>
+                              <div className={`text-xs mt-1 ${f.bg==='blue' ? 'text-blue-400' : 'text-rose-400'}`}>{f.dur}</div>
+                            </div>
+                            <div className="text-center">
+                              <div className={`font-bold text-2xl ${f.bg==='blue' ? 'text-blue-900' : 'text-rose-900'}`}>{f.arr}</div>
+                              <div className={`text-xs mt-0.5 ${f.bg==='blue' ? 'text-blue-500' : 'text-rose-500'}`}>{f.to}</div>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
 
+                  {/* 숙소 */}
                   <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center gap-2 mb-4 border-b pb-3">
                       <i className="fa-solid fa-bed text-indigo-500 text-lg"></i>
                       <h2 className="text-lg font-bold text-gray-800">숙소 정보</h2>
                     </div>
-                    <div className="text-sm space-y-2">
-                      <p className="font-bold text-lg text-indigo-900">와타야 베쏘 호텔</p>
-                      <p className="text-gray-600">5.21(수) ~ 5.24(토) / 3박</p>
-                      <div className="bg-indigo-50 p-3 rounded-xl mt-2 space-y-1.5">
-                        <p className="flex justify-between items-center border-b border-indigo-100 pb-2">
-                          <span className="text-gray-500">예약번호</span>
-                          <span className="font-mono font-bold text-indigo-900">1717639323</span>
-                        </p>
-                        <p className="flex justify-between items-start pt-1">
-                          <span className="text-gray-500 shrink-0">주소</span>
-                          <span className="text-xs text-indigo-800 text-right ml-2">〒843-0301 佐賀県嬉野市嬉野町下宿乙738</span>
-                        </p>
+                    <p className="font-bold text-xl text-indigo-900 mb-0.5">わたや別荘</p>
+                    <p className="font-bold text-base text-indigo-600 mb-2">와타야 베쏘</p>
+                    <p className="text-gray-500 text-sm mb-3">5.21(목) 체크인 → 5.24(일) 체크아웃 · 3박</p>
+                    <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-3 space-y-2.5 text-sm">
+                      <div className="flex justify-between items-center border-b border-indigo-100 pb-2.5">
+                        <span className="text-gray-500">예약번호</span>
+                        <span className="font-mono font-bold text-indigo-900 text-base tracking-wider">1717639323</span>
                       </div>
-                      <div className="mt-3 bg-purple-50 border border-purple-100 rounded-xl p-3">
-                        <p className="text-xs text-purple-700 font-bold mb-1">♨️ 숙소 포인트</p>
-                        <p className="text-xs text-gray-600">온천마을 중심 접근성 · 대욕장 및 노천탕 · 첫날과 마지막 밤 휴식에 적합</p>
-                      </div>
+                      <p className="text-xs text-gray-500">〒843-0302 佐賀県嬉野市嬉野町大字下宿乙818番地</p>
+                    </div>
+                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-3 text-xs space-y-1.5">
+                      <p className="font-bold text-purple-700 mb-1.5">🏯 와타야 베쏘 특징</p>
+                      {['우레시노 온천 대표 고급 전통 료칸','노천탕 · 노부탕 완비','가이세키 석식 / 조식 선택 가능'].map(t => (
+                        <p key={t} className="text-gray-600 flex items-start gap-1.5">
+                          <i className="fa-solid fa-check text-purple-400 mt-0.5 shrink-0"></i>{t}
+                        </p>
+                      ))}
                     </div>
                   </div>
 
+                  {/* 렌터카 */}
                   <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center gap-2 mb-4 border-b pb-3">
                       <i className="fa-solid fa-car text-gray-700 text-lg"></i>
                       <h2 className="text-lg font-bold text-gray-800">렌터카 정보</h2>
                     </div>
-                    <div className="text-sm space-y-2">
-                      <div className="flex justify-between items-center bg-gray-800 text-white p-3 rounded-xl mb-3">
-                        <div>
-                          <div className="text-gray-400 text-xs mb-0.5">렌터카 업체</div>
-                          <div className="font-bold text-yellow-400">ORIX 렌터카</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-gray-400 text-xs mb-0.5">예약번호</div>
-                          <div className="font-mono font-bold text-yellow-400">W7866709</div>
-                        </div>
+                    {/* 예약번호 강조 */}
+                    <div className="bg-gray-900 text-white rounded-xl p-4 mb-4 flex justify-between items-center">
+                      <div>
+                        <div className="text-gray-400 text-xs mb-1">렌터카 업체</div>
+                        <div className="font-bold text-yellow-400 text-lg">ORIX 렌터카</div>
+                        <div className="text-gray-400 text-xs mt-0.5">후쿠오카공항점</div>
                       </div>
-                      <p className="flex justify-between pb-1 border-b border-gray-100 gap-3">
-                        <span className="text-gray-500 shrink-0">인수</span>
-                        <span className="font-medium text-right">5.21(수) 08:40 / 국제선 터미널 카운터</span>
-                      </p>
-                      <p className="flex justify-between pb-2 border-b border-gray-100 gap-3">
-                        <span className="text-gray-500 shrink-0">반납</span>
-                        <span className="font-medium text-right">5.24(토) 14:30 / 후쿠오카 공항 권역</span>
-                      </p>
-                      <div className="grid grid-cols-2 gap-2 mt-3">
-                        <InfoChip icon="fa-check" text="국제선 이용" />
-                        <InfoChip icon="fa-check" text="가족여행 동선" />
-                        <InfoChip icon="fa-check" text="우레시노 왕복" />
-                        <InfoChip icon="fa-check" text="하우스텐보스·나가사키 이동" />
+                      <div className="text-right">
+                        <div className="text-gray-400 text-xs mb-1">예약번호</div>
+                        <div className="font-mono font-bold text-yellow-400 text-xl tracking-widest">W7866709</div>
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-sm mb-3">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-500 flex items-center gap-1.5">
+                          <i className="fa-solid fa-circle-dot text-green-400 text-xs"></i>인수
+                        </span>
+                        <span className="font-medium">5.21(목) 08:00 / 후쿠오카공항점</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-500 flex items-center gap-1.5">
+                          <i className="fa-solid fa-circle-dot text-red-400 text-xs"></i>반납
+                        </span>
+                        <span className="font-medium">5.24(일) 13:30 / 후쿠오카공항점</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {['후쿠오카공항 픽업·반납','ETC 카드 희망','면책보상 가입','3박 4일 이용'].map(t => (
+                        <span key={t} className="flex items-center gap-1.5 bg-gray-50 rounded-lg px-2.5 py-2 text-gray-600 border border-gray-100">
+                          <i className="fa-solid fa-check text-green-500"></i>{t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 주행 거리 요약 */}
+                  <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="flex items-center gap-2 mb-4 border-b pb-3">
+                      <i className="fa-solid fa-route text-emerald-500 text-lg"></i>
+                      <h2 className="text-lg font-bold text-gray-800">주행 거리 요약</h2>
+                    </div>
+                    <div className="space-y-1 text-sm">
+                      {[
+                        ['1일차','후쿠오카 → 다케오 → 아리타 → 우레시노','약 105km','from-violet-500 to-purple-500'],
+                        ['2일차','우레시노 → 사세보 → 하우스텐보스 → 우레시노','약 100km','from-rose-500 to-pink-500'],
+                        ['3일차','우레시노 → 운젠 → 나가사키 → 우레시노','약 210km','from-teal-500 to-emerald-500'],
+                        ['4일차','우레시노 → 후쿠오카','약 110km','from-blue-500 to-sky-500'],
+                      ].map(([day,route,km,grad]) => (
+                        <div key={day} className="flex justify-between items-start py-2.5 border-b border-gray-50 last:border-0">
+                          <div>
+                            <span className={`text-white text-xs font-bold px-2 py-0.5 rounded-full bg-gradient-to-r ${grad}`}>{day}</span>
+                            <p className="text-gray-400 text-xs mt-1.5">{route}</p>
+                          </div>
+                          <span className="font-bold text-emerald-600 shrink-0 ml-3 mt-0.5">{km}</span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between items-center pt-3 mt-1 border-t-2 border-gray-200">
+                        <span className="font-bold text-gray-700">총 주행 거리</span>
+                        <span className="font-bold text-emerald-700 text-xl">약 525km</span>
                       </div>
                     </div>
                   </div>
 
+                  {/* 관광지 가이드 */}
                   <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center gap-2 mb-4 border-b pb-3">
                       <i className="fa-solid fa-map-location-dot text-rose-500 text-lg"></i>
-                      <h2 className="text-lg font-bold text-gray-800">이번 일정 핵심 포인트</h2>
+                      <h2 className="text-lg font-bold text-gray-800">관광지 가이드</h2>
                     </div>
-                    <div className="space-y-3 text-sm text-gray-700">
-                      <div className="bg-rose-50 rounded-xl p-3 border border-rose-100">
-                        <div className="font-bold text-rose-700 mb-1">Day 2 · 하우스텐보스</div>
-                        <p className="text-xs text-gray-600 leading-relaxed">유럽풍 거리, 체험존, 쇼핑, 일루미네이션까지 가족 만족도가 가장 높을 가능성이 큰 핵심 일정임.</p>
-                      </div>
-                      <div className="bg-violet-50 rounded-xl p-3 border border-violet-100">
-                        <div className="font-bold text-violet-700 mb-1">Day 3 · 나가사키</div>
-                        <p className="text-xs text-gray-600 leading-relaxed">글로버가든과 이나사야마 전망대를 중심으로 사진, 먹거리, 야경까지 균형 있게 배치했음.</p>
-                      </div>
-                      <div className="bg-sky-50 rounded-xl p-3 border border-sky-100">
-                        <div className="font-bold text-sky-700 mb-1">Day 4 · 후쿠오카</div>
-                        <p className="text-xs text-gray-600 leading-relaxed">귀국일은 무리하지 않고 쇼핑과 점심 중심으로 마감하도록 설계했음</p>
-                      </div>
+                    <div className="space-y-3 text-xs">
+                      {[
+                        { day:'Day1', tag:'다케오 · 아리타', grad:'from-violet-500 to-purple-500',
+                          items:[['fa-book-open','text-amber-500','다케오 시립 도서관 — 츠타야 운영, 감성 공간'],
+                                 ['fa-torii-gate','text-rose-500','다케오 온천 문루 — 국가 중요문화재'],
+                                 ['fa-jar','text-teal-500','아리타 도자기 마을 — 일본 도자기 발상지']] },
+                        { day:'Day2', tag:'사세보 · 하우스텐보스', grad:'from-rose-500 to-pink-500',
+                          items:[['fa-water','text-cyan-500','구주쿠시마 전망대 — 99개 섬의 절경'],
+                                 ['fa-burger','text-orange-500','사세보 버거 — 일본 3대 수제버거 원조'],
+                                 ['fa-star','text-yellow-500','하우스텐보스 야경 (18:30~ 일루미네이션)']] },
+                        { day:'Day3', tag:'운젠 · 나가사키', grad:'from-teal-500 to-emerald-500',
+                          items:[['fa-fire-flame-curved','text-orange-600','운젠 지옥 + 지옥공방 — 유황 분화구'],
+                                 ['fa-dove','text-sky-500','나가사키 평화공원 / 글로버가든 (택2)'],
+                                 ['fa-mountain','text-violet-600','이나사야마 — 일본 3대 야경 전망대']] },
+                        { day:'Day4', tag:'후쿠오카', grad:'from-blue-500 to-sky-500',
+                          items:[['fa-bag-shopping','text-pink-500','캐널시티 하카타 or 텐진 지하상가'],
+                                 ['fa-bowl-food','text-orange-500','하카타 라멘 · 명란 요리 점심'],
+                                 ['fa-plane-departure','text-blue-500','OZ133으로 귀국 (16:25)']] },
+                      ].map(s => (
+                        <div key={s.day} className="border border-gray-100 rounded-xl overflow-hidden">
+                          <div className={`bg-gradient-to-r ${s.grad} px-3 py-2 flex items-center gap-2`}>
+                            <span className="text-white/80 text-xs font-bold">{s.day}</span>
+                            <span className="text-white font-bold text-xs">{s.tag}</span>
+                          </div>
+                          <ul className="p-3 space-y-2">
+                            {s.items.map(([ic, col, txt], i) => (
+                              <li key={i} className="flex items-center gap-2 text-gray-600">
+                                <div className={`w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100`}>
+                                  <i className={`fa-solid ${ic} ${col} text-xs`}></i>
+                                </div>
+                                {txt}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
                     </div>
                   </div>
+
                 </div>
               )}
             </div>
